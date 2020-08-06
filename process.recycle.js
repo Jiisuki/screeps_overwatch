@@ -10,7 +10,7 @@
 module.exports = {
     run: function(creep,roomspawns){
         /* find closest spawn */
-        var dist = 1000;
+        var dist = 10000;
         var idx = 0;
         for( var s = 0; s < roomspawns.length; s++ ){
             var newDist = creep.pos.getRangeTo(roomspawns[s]);
@@ -20,13 +20,28 @@ module.exports = {
             }
             creep.memory.path = creep.pos.findPathTo(roomspawns[idx]);
         }
-        if( creep.pos.getRangeTo(roomspawns[idx]) > 1 ){
-            creep.moveByPath(creep.memory.path);
-        } else {
-            //creep.suicide();
-            /* something weird happened here.. */
-            if( roomspawns[idx].recycleCreep(creep) != OK ){
+        
+        var sp = roomspawns[idx];
+        if (undefined == sp)
+        {
+            console.log("Invalid spawn for recycling!");
+            creep.suicide();
+        }
+        else
+        {
+            let st = sp.recycleCreep(creep);
+            if (ERR_NOT_IN_RANGE == st)
+            {
+                creep.moveByPath(creep.memory.path);
+            }
+            else if (OK != st)
+            {
                 creep.suicide();
+                console.log("Error recycling creep, sucicide.");
+            }
+            else
+            {
+                //console.log("Recycled creep.");
             }
         }
     }

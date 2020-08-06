@@ -15,17 +15,22 @@ module.exports = {
         
         if (creep.memory.upgrading)
         {
-            if (creep.room.controller)
+            if (creep.room.controller && creep.room.controller.my)
             {
                 var s = creep.upgradeController(creep.room.controller);
                 if (s == ERR_NOT_IN_RANGE)
                 {
+                    
                     creep.moveTo(creep.room.controller);
                 }
             }
             else
             {
-                creep.memory.task = undefined;
+                /* Find way home.. */
+                var exitDir = creep.room.findExitTo(Game.spawns["Spawn1"].room);
+                var exitPos = creep.pos.findClosestByRange(exitDir);
+                creep.moveTo(exitPos);
+                //creep.memory.task = undefined;
             }
         }
         else
